@@ -1,5 +1,5 @@
 import gradio as gr
-from chatbot import ask_ai
+from brain import ask_ai
 
 
 demo = gr.ChatInterface(
