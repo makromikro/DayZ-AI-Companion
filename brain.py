@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from prompts import COMPANION_PROMPT
+from config import MODEL_NAME
 
 MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
 
