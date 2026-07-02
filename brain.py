@@ -4,6 +4,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from prompts import COMPANION_PROMPT
 from config import MODEL_NAME
 from memory import remember, load_memory
+from extractor import extract_memory
 
 print("Loading tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -58,15 +59,13 @@ def build_messages(message, history):
 
 def ask_ai(message, history):
 
-    # Load long-term memory
     memory = load_memory()
 
-    # Save the user's name if they tell us
-    if "my name is" in message.lower():
-        name = message.lower().split("my name is")[-1].strip().title()
-        remember("player_name", name)
+    facts = extract_memory(message)
 
-    # Answer directly from memory
+    for key, value in facts.items():
+        remember(key, value)
+
     if "what is my name" in message.lower():
         if "player_name" in memory:
             return f"Your name is {memory['player_name']}."
