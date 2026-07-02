@@ -1,9 +1,9 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+
 from prompts import COMPANION_PROMPT
 from config import MODEL_NAME
-
-MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
+from memory import remember, load_memory
 
 print("Loading tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -39,14 +39,38 @@ def build_messages(message, history):
         text = get_text_from_message(item)
 
         if role in ["user", "assistant"]:
-            messages.append({"role": role, "content": text})
+            messages.append(
+                {
+                    "role": role,
+                    "content": text
+                }
+            )
 
-    messages.append({"role": "user", "content": message})
+    messages.append(
+        {
+            "role": "user",
+            "content": message
+        }
+    )
 
     return messages
 
 
 def ask_ai(message, history):
+
+    # Load long-term memory
+    memory = load_memory()
+
+    # Save the user's name if they tell us
+    if "my name is" in message.lower():
+        name = message.lower().split("my name is")[-1].strip().title()
+        remember("player_name", name)
+
+    # Answer directly from memory
+    if "what is my name" in message.lower():
+        if "player_name" in memory:
+            return f"Your name is {memory['player_name']}."
+
     messages = build_messages(message, history)
 
     prompt = tokenizer.apply_chat_template(
