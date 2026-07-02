@@ -70,7 +70,18 @@ def ask_ai(message, history):
         if "player_name" in memory:
             return f"Your name is {memory['player_name']}."
 
-    messages = build_messages(message, history)
+    memory_text = ""
+
+    if memory:
+        memory_text = "\nKnown facts about the user:\n"
+
+        for key, value in memory.items():
+            memory_text += f"- {key}: {value}\n"
+
+    messages = build_messages(
+        memory_text + "\n" + message,
+        history
+    )
 
     prompt = tokenizer.apply_chat_template(
         messages,
