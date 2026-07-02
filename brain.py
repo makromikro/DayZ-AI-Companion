@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from prompts import COMPANION_PROMPT
 from config import MODEL_NAME
 from memory import remember, load_memory
-from extractor import extract_memory
+from ai_extractor import extract_memory_with_ai
 
 print("Loading tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -61,14 +61,12 @@ def ask_ai(message, history):
 
     memory = load_memory()
 
-    facts = extract_memory(message)
+    facts = extract_memory_with_ai(model, tokenizer, message)
 
     for key, value in facts.items():
         remember(key, value)
 
-    if "what is my name" in message.lower():
-        if "player_name" in memory:
-            return f"Your name is {memory['player_name']}."
+    memory = load_memory()
 
     memory_text = ""
 
@@ -91,13 +89,14 @@ def ask_ai(message, history):
 
     inputs = tokenizer(prompt, return_tensors="pt")
 
-    output = model.generate(
-        **inputs,
-        max_new_tokens=120,
-        do_sample=True,
-        temperature=0.7,
-        pad_token_id=tokenizer.eos_token_id
-    )
+    with torch.no_grad():
+        output = model.generate(
+            **inputs,
+            max_new_tokens=120,
+            do_sample=True,
+            temperature=0.7,
+            pad_token_id=tokenizer.eos_token_id
+        )
 
     generated_tokens = output[0][inputs["input_ids"].shape[-1]:]
 
