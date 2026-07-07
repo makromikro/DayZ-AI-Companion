@@ -1,11 +1,15 @@
 import gradio as gr
-from brain import ask_ai
+
+from runtime import process_message
+
+
+def chat(message, history):
+    return process_message(message, history)
 
 
 demo = gr.ChatInterface(
-    fn=ask_ai,
-    title="My First AI Companion",
-    description="A simple AI companion with conversation history."
+    fn=chat,
+    title="DayZ AI Companion"
 )
 
 demo.launch()

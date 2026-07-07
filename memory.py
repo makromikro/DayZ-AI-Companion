@@ -5,10 +5,6 @@ MEMORY_FILE = "memory.json"
 
 
 def load_memory():
-    """
-    Load memory from disk.
-    """
-
     if not os.path.exists(MEMORY_FILE):
         return {}
 
@@ -17,22 +13,29 @@ def load_memory():
 
 
 def save_memory(memory):
-    """
-    Save memory to disk.
-    """
-
     with open(MEMORY_FILE, "w") as file:
         json.dump(memory, file, indent=4)
 
 
 def remember(key, value):
-    """
-    Save a single fact into long-term memory.
-    """
 
     memory = load_memory()
 
-    memory[key] = value
+    # Merge lists
+    if isinstance(value, list):
+
+        existing = memory.get(key, [])
+
+        if not isinstance(existing, list):
+            existing = [existing]
+
+        for item in value:
+            if item not in existing:
+                existing.append(item)
+
+        memory[key] = existing
+
+    else:
+        memory[key] = value
 
     save_memory(memory)
-        
