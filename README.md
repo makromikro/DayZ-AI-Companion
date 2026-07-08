@@ -1,23 +1,80 @@
-# AI Companion Project
+# 🧠 DayZ AI Companion
 
-## Overview
+An AI-powered companion for **DayZ** that can listen, remember, and assist you in real time while you play.
 
-This project started as a simple Hugging Face chatbot built with Python and Gradio.
+## Features
 
-Its long-term goal is to evolve into an AI Companion framework for the game DayZ, featuring intelligent NPCs capable of conversation, memory, and eventually voice interaction.
+- 🎤 Voice input using your microphone
+- 📝 Speech-to-text with Faster Whisper
+- 🧠 Local AI powered by LM Studio
+- 💾 Persistent long-term memory
+- ⚡ Fast responses (under 2 seconds)
+- 🏗️ Modular architecture for future expansion
 
-## Current Milestone
+## Current Architecture
 
-✅ Local chatbot using:
+```
+Microphone
+      │
+      ▼
+Faster Whisper
+      │
+      ▼
+Runtime
+      │
+      ▼
+LM Studio (Qwen)
+      │
+      ▼
+AI Response
+```
+
+## Tech Stack
+
 - Python
-- Hugging Face Transformers
+- LM Studio
+- Qwen 2.5
+- Faster Whisper
 - Gradio
-- Git
+- Requests
+- NumPy
+- SoundDevice
 
-## Next Goals
+## Roadmap
 
-- Chat interface
-- Conversation memory
-- Voice interaction
-- DayZ integration
-- Multi-agent AI companions
+### ✅ Completed
+
+- Local AI backend
+- LM Studio integration
+- Persistent memory
+- AI memory extraction
+- Runtime
+- Scheduler
+- Decision Engine
+- Voice input
+- Speech-to-text
+
+### 🚧 In Progress
+
+- Continuous voice conversation
+- Text-to-speech
+- Improved memory system
+
+### 🔜 Planned
+
+- DayZ game integration
+- Screen understanding
+- Inventory awareness
+- Map awareness
+- Autonomous companion
+- NPC interaction
+
+## Project Status
+
+Current Version: **v0.2.0**
+
+The project is under active development.
+
+## License
+
+MIT
