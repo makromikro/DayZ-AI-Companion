@@ -1,2 +1,5 @@
 gradio
 requests
+sounddevice
+numpy
+faster-whisper
