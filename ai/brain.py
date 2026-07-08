@@ -1,9 +1,9 @@
 import requests
 
-from prompts import COMPANION_PROMPT
+from ai.prompts import COMPANION_PROMPT
 from config import LM_STUDIO_BASE_URL, LM_STUDIO_MODEL
-from memory import remember, load_memory
-from ai_extractor import extract_memory_with_ai
+from memory_system.memory import remember, load_memory
+from ai.ai_extractor import extract_memory_with_ai
 
 
 def build_messages(message, history):
@@ -73,8 +73,6 @@ def ask_lm_studio(messages):
 
 
 def ask_ai(message, history):
-    memory = load_memory()
-
     facts = extract_memory_with_ai(message)
 
     for key, value in facts.items():

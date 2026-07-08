@@ -3,7 +3,7 @@ import re
 import requests
 
 from config import LM_STUDIO_BASE_URL, LM_STUDIO_MODEL
-from memory_manager import clean_memory
+from memory_system.memory_manager import clean_memory
 
 
 def extract_memory_with_ai(message):

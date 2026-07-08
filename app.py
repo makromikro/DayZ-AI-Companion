@@ -1,6 +1,6 @@
 import gradio as gr
 
-from runtime import process_message
+from core.runtime import process_message
 
 
 def chat(message, history):
