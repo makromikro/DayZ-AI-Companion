@@ -1,5 +1,6 @@
 from voice.microphone import record_audio, save_wav
 from voice.transcriber import transcribe_audio_file
+from voice.speaker import speak
 from core.runtime import process_message
 
 
@@ -36,12 +37,15 @@ def main():
 
         if should_exit(text):
             print("Companion stopped.")
+            speak("Goodbye.")
             break
 
         answer = process_message(text, history)
 
         print("\nCompanion:")
         print(answer)
+
+        speak(answer)
 
         history.append(
             {

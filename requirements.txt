@@ -3,3 +3,4 @@ requests
 sounddevice
 numpy
 faster-whisper
+piper-tts
