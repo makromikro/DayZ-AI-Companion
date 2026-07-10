@@ -16,3 +16,7 @@ __pycache__/
 Thumbs.db
 
 memory.json
+
+# Piper voice models
+*.onnx
+*.onnx.json
