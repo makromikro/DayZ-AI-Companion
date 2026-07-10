@@ -1,42 +1,36 @@
-import sounddevice as sd
-import numpy as np
-import wave
 import time
+import wave
+from collections import deque
+
+import numpy as np
+import sounddevice as sd
 
 
 SAMPLE_RATE = 16000
 CHANNELS = 1
 
-# Audio is processed in small chunks.
 BLOCK_DURATION = 0.1
 BLOCK_SIZE = int(SAMPLE_RATE * BLOCK_DURATION)
 
-# Speech detection settings.
 SPEECH_THRESHOLD = 0.015
 SILENCE_DURATION = 1.2
 MAX_RECORDING_DURATION = 30
 
-# How often the current audio level is printed while waiting.
-DEBUG_AUDIO_LEVEL = False
+# Keep one second of audio before speech is detected.
+PRE_ROLL_DURATION = 1.0
+PRE_ROLL_BLOCKS = int(PRE_ROLL_DURATION / BLOCK_DURATION)
 
 
 def get_audio_level(audio):
-    """
-    Calculate the RMS volume level of an audio chunk.
-    """
-
     return float(np.sqrt(np.mean(np.square(audio))))
 
 
 def record_audio():
-    """
-    Wait for the user to start speaking, record while they speak,
-    and stop automatically after a period of silence.
-    """
-
     print("Listening... Speak when ready.")
 
+    pre_roll = deque(maxlen=PRE_ROLL_BLOCKS)
     recorded_chunks = []
+
     speech_started = False
     silence_start = None
     recording_start = None
@@ -57,43 +51,34 @@ def record_audio():
             audio_chunk = audio_chunk.flatten()
             audio_level = get_audio_level(audio_chunk)
 
-            if DEBUG_AUDIO_LEVEL:
-                print(f"Audio level: {audio_level:.5f}")
-
-            # Wait until speech is detected.
             if not speech_started:
+                pre_roll.append(audio_chunk.copy())
+
                 if audio_level >= SPEECH_THRESHOLD:
                     speech_started = True
                     recording_start = time.time()
                     silence_start = None
 
-                    recorded_chunks.append(audio_chunk.copy())
+                    # Include audio captured before detection.
+                    recorded_chunks.extend(pre_roll)
 
                     print("Speech detected. Recording...")
 
                 continue
 
-            # Speech has already started.
             recorded_chunks.append(audio_chunk.copy())
 
             if audio_level >= SPEECH_THRESHOLD:
-                # User is still speaking.
                 silence_start = None
-
             else:
-                # Silence has started.
                 if silence_start is None:
                     silence_start = time.time()
 
-                silence_length = time.time() - silence_start
-
-                if silence_length >= SILENCE_DURATION:
+                if time.time() - silence_start >= SILENCE_DURATION:
                     print("Silence detected. Recording finished.")
                     break
 
-            recording_duration = time.time() - recording_start
-
-            if recording_duration >= MAX_RECORDING_DURATION:
+            if time.time() - recording_start >= MAX_RECORDING_DURATION:
                 print("Maximum recording duration reached.")
                 break
 
@@ -104,10 +89,6 @@ def record_audio():
 
 
 def save_wav(filename, audio):
-    """
-    Save recorded audio as a 16-bit mono WAV file.
-    """
-
     if audio.size == 0:
         return
 
