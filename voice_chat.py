@@ -3,21 +3,59 @@ from voice.transcriber import transcribe_audio_file
 from core.runtime import process_message
 
 
+EXIT_WORDS = {"goodbye", "exit", "quit"}
+
+
+def should_exit(text):
+    words = {
+        word.strip(".,!?").lower()
+        for word in text.split()
+    }
+
+    return bool(words & EXIT_WORDS)
+
+
 def main():
     history = []
 
-    audio = record_audio()
-    save_wav("voice_input.wav", audio)
+    print("DayZ AI Companion started.")
+    print("Say 'goodbye', 'exit', or 'quit' to stop.")
 
-    text = transcribe_audio_file("voice_input.wav")
+    while True:
+        audio = record_audio()
+        save_wav("voice_input.wav", audio)
 
-    print("\nYou said:")
-    print(text)
+        text = transcribe_audio_file("voice_input.wav")
 
-    answer = process_message(text, history)
+        if not text:
+            print("No speech detected.")
+            continue
 
-    print("\nCompanion:")
-    print(answer)
+        print("\nYou said:")
+        print(text)
+
+        if should_exit(text):
+            print("Companion stopped.")
+            break
+
+        answer = process_message(text, history)
+
+        print("\nCompanion:")
+        print(answer)
+
+        history.append(
+            {
+                "role": "user",
+                "content": text
+            }
+        )
+
+        history.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
 
 
 if __name__ == "__main__":
